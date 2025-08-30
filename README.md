@@ -1,128 +1,54 @@
-# Building OpenSSL `.so` Libraries for Android (Windows 11 + MSYS2 + NDK r28)
+# SSL-Android
 
-This guide shows how to build **libcrypto.so** and **libssl.so** from OpenSSL for Android ABIs (`arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`).  
+SSL-Android is a project to build OpenSSL libraries for Android platforms. It supports various Android architectures such as `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`, and `riscv64`. The project is designed to be customizable and can be built for different API levels and target ABIs.
 
----
+### Features
+- Build OpenSSL libraries (`.so`) for Android.
+- Supports **16KB alignment** for Android shared libraries.
+- Easily customizable via GitHub Actions.
+- Built for various target ABIs including `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`, and `riscv64`.
 
-## 1. Prerequisites
+### Requirements
+- **Android NDK**: Version r28c (can change in github action)
+- **Android Build Tools**: Minimum version 35.0.0-rc3 is required for `zipalign`.
+- **GitHub Actions**: For automating the build and release process.
 
-- **Windows**
-- [MSYS2](https://www.msys2.org/) (use **MSYS2 UCRT64** or **MSYS2 MinGW64** shell)
-- [Android NDK r28](https://developer.android.com/ndk/downloads)  
-  Extract to a folder, e.g. `D:\Android\android-ndk-r28c`
-- [OpenSSL source](https://www.openssl.org/source/)  
-  Extract to a folder, e.g. `C:\src\openssl-3.5.2`
+### How to Use
 
-Inside **MSYS2**, install build tools:
-```bash
-pacman -S --needed base-devel perl nasm unzip
-```
+1. **Fork the Repository**:
+   - Fork this repository to your own GitHub account to start using it.
 
----
+2. **Modify the `build.yml` for Minimum SDK**:
+   - After forking, navigate to the `.github/workflows/build.yml` file.
+   - Update the **minimum SDK** version in the `ANDROID_TARGET_API` section as required.
+     ```yaml
+     android_target_api: 29  # Change this value to your desired SDK version
+     ```
 
-## 2. Environment Setup
+3. **Build the Project**:
+   - Once the fork is completed and the SDK version is updated, GitHub Actions will automatically start the build process for your project.
+   - The project will generate OpenSSL `.so` libraries for Android with support for the target API level and architecture you configured.
 
-In MSYS2 shell:
-```bash
-# Change this path to your NDK location
-export ANDROID_NDK_ROOT=/d/Android/android-ndk-r28c
-export PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/windows-x86_64/bin:$PATH
+4. **16KB Alignment**:
+   - The build process has been configured to support **16KB alignment** by passing the `-Wl,-z,max-page-size=16384` linker flag during the compilation process.
 
-# Go to your OpenSSL source folder
-cd /c/src/openssl-3.5.2
-```
+5. **Check Build Results**:
+   - After the build completes, you can check the output for your built libraries in the `openssl_${OPENSSL_VERSION}_${ANDROID_TARGET_ABI}` directory.
+   - You can also find the generated `.tar.gz` files containing the libraries for each architecture.
 
-Verify toolchain: (minSdk = 29)
-```bash
-clang --version
-aarch64-linux-android29-clang --version
-```
+6. **Upload Release**:
+   - If you want to generate a release, the `build_new.yml` script will automatically package the `.so` files and upload them to your GitHub releases when the build completes successfully.
 
----
+### GitHub Actions
 
-## 3. Build Instructions (minSdk = 29)
+This repository uses **GitHub Actions** for continuous integration. It automates the process of downloading the Android NDK, building OpenSSL for Android, and uploading the generated libraries as a release.
 
-> Run `make distclean` before each new build.
+- **Workflow Trigger**: The workflow is triggered on pushes to the `main` branch or manually via the GitHub interface using `workflow_dispatch`.
+- **Steps**: 
+  1. Checkout the repository.
+  2. Download the Android NDK.
+  3. Build OpenSSL with the appropriate configuration.
+  4. Generate a release tag and upload the libraries.
 
-> Note: You can change "29" to minSdk of your Android app.
+### File Structure
 
-### arm64-v8a
-```bash
-make distclean 2>/dev/null || true
-export CC="aarch64-linux-android29-clang" AR="llvm-ar" RANLIB="llvm-ranlib" NM="llvm-nm" LD="ld.lld"
-
-./Configure android-arm64 -D__ANDROID_API__=29 shared   --prefix=$PWD/out/android/arm64 --openssldir=$PWD/out/android/arm64/ssl
-
-make -j8
-make install_sw
-```
-
-### armeabi-v7a (optional, 32-bit ARM)
-```bash
-make distclean
-export CC="armv7a-linux-androideabi29-clang" AR="llvm-ar" RANLIB="llvm-ranlib" NM="llvm-nm" LD="ld.lld"
-
-./Configure android-arm -D__ANDROID_API__=29 shared   --prefix=$PWD/out/android/armeabi-v7a --openssldir=$PWD/out/android/armeabi-v7a/ssl
-
-make -j8
-make install_sw
-```
-
-### x86_64
-```bash
-make distclean
-export CC="x86_64-linux-android29-clang" AR="llvm-ar" RANLIB="llvm-ranlib" NM="llvm-nm" LD="ld.lld"
-
-./Configure android-x86_64 -D__ANDROID_API__=29 shared   --prefix=$PWD/out/android/x86_64 --openssldir=$PWD/out/android/x86_64/ssl
-
-make -j8
-make install_sw
-```
-
-### x86 32-bit
-```bash
-make distclean
-export CC="i686-linux-android29-clang" AR="llvm-ar" RANLIB="llvm-ranlib" NM="llvm-nm" LD="ld.lld"
-
-./Configure android-x86 -D__ANDROID_API__=29 shared   --prefix=$PWD/out/android/x86 --openssldir=$PWD/out/android/x86/ssl
-
-make -j8
-make install_sw
-```
-
----
-
-## 4. Output
-
-Each build generates:
-```
-out/android/<abi>/lib/libcrypto.so
-out/android/<abi>/lib/libssl.so
-```
-
-Copy them into your Android project:
-```
-app/src/main/jniLibs/arm64-v8a/
-app/src/main/jniLibs/armeabi-v7a/
-app/src/main/jniLibs/x86_64/
-```
-
----
-
-## 5. Gradle Configuration
-
-```gradle
-android {
-  defaultConfig {
-    minSdk 29
-    targetSdk 35
-    ndk {
-      abiFilters "arm64-v8a", "x86_64" // add "armeabi-v7a" if needed
-    }
-  }
-}
-```
-
----
-
-✅ Done — OpenSSL `.so` libraries are now ready for Android integration.  
