@@ -61,8 +61,8 @@ jobs:
 
       - name: Check .so alignment
         run: |
-          readelf -e  ${{env.WORK_PATH}}/OpenSSL_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libcrypto.so | grep 'Alignment'
-          readelf -e  ${{env.WORK_PATH}}/OpenSSL_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libssl.so | grep 'Alignment'
+          readelf -e  ${{env.WORK_PATH}}/openssl_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libcrypto.so | grep 'Alignment'
+          readelf -e  ${{env.WORK_PATH}}/openssl_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libssl.so | grep 'Alignment'
 
       - name: Generate release tag
         id: tag
