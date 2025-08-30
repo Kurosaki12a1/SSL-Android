@@ -56,7 +56,7 @@ jobs:
         id: compile
         if: steps.download_ndk.outputs.status == 'success' && steps.download_openssl.outputs.status == 'success' && !cancelled()
         run: |
-          bash ./openssl_build_new.sh ${{fromJSON(matrix.info).ANDROID_TARGET_API}} ${{fromJSON(matrix.info).ANDROID_TARGET_ABI}} ${{env.OPENSSL_VERSION}} ${{fromJSON(matrix.info).ANDROID_NDK}}
+          bash ./android_openssl.sh ${{fromJSON(matrix.info).ANDROID_TARGET_API}} ${{fromJSON(matrix.info).ANDROID_TARGET_ABI}} ${{env.OPENSSL_VERSION}} ${{fromJSON(matrix.info).ANDROID_NDK}}
           echo "::set-output name=status::success"
 
       - name: Check .so alignment
