@@ -26,8 +26,8 @@ function build(){
 
     export ANDROID_NDK_ROOT=${ANDROID_NDK_PATH}
     export PATH=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${PLATFORM}-x86_64/bin:$PATH
-    export CXXFLAGS="-fPIC -Os"
-    export CPPFLAGS="-DANDROID -fPIC -Os"
+    export CXXFLAGS="-fPIC -Os -malign=16"
+    export CPPFLAGS="-DANDROID -fPIC -Os -malgin=16"
 
     # Cấu hình với tùy chọn `shared` thay vì `-static`
     if   [ "${ANDROID_TARGET_ABI}" == "armeabi-v7a" ]; then
