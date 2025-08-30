@@ -62,8 +62,17 @@ jobs:
       - name: Check .so alignment
         continue-on-error: true
         run: |
-          readelf -e  ${{env.WORK_PATH}}/openssl_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libcrypto.so | grep 'Alignment'
-          readelf -e  ${{env.WORK_PATH}}/openssl_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libssl.so | grep 'Alignment'
+          LIB_PATH="  ${{env.WORK_PATH}}/openssl_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib"
+          for lib in ${LIB_PATH}/*.so; do
+            echo "Checking alignment for: ${lib}"
+            res=$(objdump -p "${lib}" | grep LOAD | awk '{ print $NF }' | head -1)
+          
+            if [[ $res =~ 2\*\*(1[4-9]|[2-9][0-9]|[1-9][0-9]{2,}) ]]; then
+              echo -e "${lib}: ${GREEN}ALIGNED${ENDCOLOR} ($res)"
+            else
+              echo -e "${lib}: ${RED}UNALIGNED${ENDCOLOR} ($res)"
+            fi
+          done
 
       - name: Generate release tag
         id: tag
