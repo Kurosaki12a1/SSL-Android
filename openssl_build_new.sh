@@ -1,27 +1,5 @@
 #!/bin/bash -e
 
-################################################################################
-#   Copyright 2021-2025 217heidai<217heidai@gmail.com>
-#
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-################################################################################
-
-################################################################################
-#   build OpenSSL for Android armeabi-v7a arm64-v8a x86 x86_64 riscv64
-#   support Linux and macOS
-################################################################################
-
-
 WORK_PATH=$(cd "$(dirname "$0")";pwd)
 
 ANDROID_TARGET_API=$1
@@ -42,6 +20,11 @@ else
     PLATFORM="linux"
 fi
 
+# Thêm flag để hỗ trợ 16KB alignment cho Android
+ALIGNMENT_FLAGS="-malign=16 -fPIC -Os"
+export CXXFLAGS="$CXXFLAGS $ALIGNMENT_FLAGS"
+export CPPFLAGS="$CPPFLAGS $ALIGNMENT_FLAGS"
+
 function build(){
     mkdir ${OUTPUT_PATH}
 
@@ -49,9 +32,10 @@ function build(){
 
     export ANDROID_NDK_ROOT=${ANDROID_NDK_PATH}
     export PATH=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${PLATFORM}-x86_64/bin:$PATH
-    export CXXFLAGS="-fPIC -Os"
-    export CPPFLAGS="-DANDROID -fPIC -Os"
+    export CXXFLAGS="-fPIC -Os $ALIGNMENT_FLAGS"
+    export CPPFLAGS="-DANDROID -fPIC -Os $ALIGNMENT_FLAGS"
 
+    # Cấu hình với tùy chọn `shared` thay vì `-static`
     if   [ "${ANDROID_TARGET_ABI}" == "armeabi-v7a" ]; then
         ./Configure android-arm     -D__ANDROID_API__=${ANDROID_TARGET_API} shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
     elif [ "${ANDROID_TARGET_ABI}" == "arm64-v8a"   ]; then
