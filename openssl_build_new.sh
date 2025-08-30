@@ -53,21 +53,21 @@ function build(){
     export CPPFLAGS="-DANDROID -fPIC -Os"
 
     if   [ "${ANDROID_TARGET_ABI}" == "armeabi-v7a" ]; then
-        ./Configure android-arm     -D__ANDROID_API__=${ANDROID_TARGET_API} -shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
+        ./Configure android-arm     -D__ANDROID_API__=${ANDROID_TARGET_API} shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
     elif [ "${ANDROID_TARGET_ABI}" == "arm64-v8a"   ]; then
-        ./Configure android-arm64   -D__ANDROID_API__=${ANDROID_TARGET_API} -shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
+        ./Configure android-arm64   -D__ANDROID_API__=${ANDROID_TARGET_API} shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
     elif [ "${ANDROID_TARGET_ABI}" == "x86"         ]; then
-        ./Configure android-x86     -D__ANDROID_API__=${ANDROID_TARGET_API} -shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
+        ./Configure android-x86     -D__ANDROID_API__=${ANDROID_TARGET_API} shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
     elif [ "${ANDROID_TARGET_ABI}" == "x86_64"      ]; then
-        ./Configure android-x86_64  -D__ANDROID_API__=${ANDROID_TARGET_API} -shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
+        ./Configure android-x86_64  -D__ANDROID_API__=${ANDROID_TARGET_API} shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
     elif [ "${ANDROID_TARGET_ABI}" == "riscv64"     ]; then
-        ./Configure android-riscv64 -D__ANDROID_API__=${ANDROID_TARGET_API} -shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
+        ./Configure android-riscv64 -D__ANDROID_API__=${ANDROID_TARGET_API} shared ${OPENSSL_OPTIONS} --prefix=${OUTPUT_PATH}
     else
         echo "Unsupported target ABI: ${ANDROID_TARGET_ABI}"
         exit 1
     fi
 
-    make CFLAGS="-fPIC" LDFLAGS="-fPIC" -j$(nproc)
+    make -j$(nproc)
     make install
 
     echo "Build completed! Check output libraries in ${OUTPUT_PATH}"

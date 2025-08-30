@@ -19,10 +19,10 @@ jobs:
       matrix:
         info:
           - '{ "ANDROID_TARGET_ABI": "armeabi-v7a", "ANDROID_TARGET_API": "29",  "ANDROID_NDK": "r28c"}'
-          - '{ "ANDROID_TARGET_ABI": "arm64-v8a",   "ANDROID_TARGET_API": "29",  "ANDROID_NDK": "r28c"}'
-          - '{ "ANDROID_TARGET_ABI": "riscv64",     "ANDROID_TARGET_API": "29",  "ANDROID_NDK": "r28c"}'
-          - '{ "ANDROID_TARGET_ABI": "x86",         "ANDROID_TARGET_API": "29",  "ANDROID_NDK": "r28c"}'
-          - '{ "ANDROID_TARGET_ABI": "x86_64",      "ANDROID_TARGET_API": "29",  "ANDROID_NDK": "r28c"}'
+          - '{ "ANDROID_TARGET_ABI": "arm64-v8a", "ANDROID_TARGET_API": "29",  "ANDROID_NDK": "r28c"}'
+          - '{ "ANDROID_TARGET_ABI": "riscv64", "ANDROID_TARGET_API": "29",  "ANDROID_NDK": "r28c"}'
+          - '{ "ANDROID_TARGET_ABI": "x86", "ANDROID_TARGET_API": "29",  "ANDROID_NDK": "r28c"}'
+          - '{ "ANDROID_TARGET_ABI": "x86_64", "ANDROID_TARGET_API": "29",  "ANDROID_NDK": "r28c"}'
     
     steps:
       - name: Checkout
@@ -32,7 +32,7 @@ jobs:
         run: |
           sudo apt -yqq update
           sudo apt install -yqq aria2
-      
+
       - name: Download Android NDK
         id: download_ndk
         run: |
@@ -60,7 +60,7 @@ jobs:
           tar -zcvf OpenSSL_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}.tar.gz openssl_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}
           echo "::set-output name=release_tag::${{env.OPENSSL_VERSION}}"
           echo "::set-output name=status::success"
-      
+
       - name: Upload firmware to release
         if: steps.tag.outputs.status == 'success' && !cancelled()
         uses: softprops/action-gh-release@v1
@@ -69,7 +69,6 @@ jobs:
         with:
           tag_name: ${{steps.tag.outputs.release_tag}}
           files: ${{env.WORK_PATH}}/OpenSSL_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}.tar.gz
-
 
   Delete_Workflow:
     needs: [ Compile_OpenSSL_for_Android ]
