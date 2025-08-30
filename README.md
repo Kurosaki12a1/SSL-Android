@@ -1,6 +1,6 @@
 # Building OpenSSL `.so` Libraries for Android (Windows 11 + MSYS2 + NDK r28)
 
-This guide shows how to build **libcrypto.so** and **libssl.so** from OpenSSL for Android ABIs (`arm64-v8a`, `armeabi-v7a`, `x86_64`).  
+This guide shows how to build **libcrypto.so** and **libssl.so** from OpenSSL for Android ABIs (`arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`).  
 
 ---
 
@@ -32,7 +32,7 @@ export PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/windows-x86_64/bin:$PATH
 cd /c/src/openssl-3.5.2
 ```
 
-Verify toolchain:
+Verify toolchain: (minSdk = 29)
 ```bash
 clang --version
 aarch64-linux-android29-clang --version
@@ -43,6 +43,7 @@ aarch64-linux-android29-clang --version
 ## 3. Build Instructions (minSdk = 29)
 
 > Run `make distclean` before each new build.
+> Note: You can change "29" to minSdk of your Android app.
 
 ### arm64-v8a
 ```bash
@@ -77,7 +78,7 @@ make -j8
 make install_sw
 ```
 
-### (Optional) x86 32-bit
+### x86 32-bit
 ```bash
 make distclean
 export CC="i686-linux-android29-clang" AR="llvm-ar" RANLIB="llvm-ranlib" NM="llvm-nm" LD="ld.lld"
