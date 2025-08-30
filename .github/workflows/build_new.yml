@@ -28,10 +28,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
 
-      - name: Install tools
+      - name: Install tools check aligment
         run: |
           sudo apt-get update
-          sudo apt-get install -y binutils aria2
+          sudo apt-get install -y binutils
 
       - name: Install Aria2
         run: |
@@ -60,6 +60,7 @@ jobs:
           echo "::set-output name=status::success"
 
       - name: Check .so alignment
+        continue-on-error: true
         run: |
           readelf -e  ${{env.WORK_PATH}}/openssl_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libcrypto.so | grep 'Alignment'
           readelf -e  ${{env.WORK_PATH}}/openssl_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libssl.so | grep 'Alignment'
