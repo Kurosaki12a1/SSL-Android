@@ -65,7 +65,7 @@ jobs:
         if: steps.tag.outputs.status == 'success' && !cancelled()
         uses: softprops/action-gh-release@v1
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.APP_TOKEN}}
         with:
           tag_name: ${{steps.tag.outputs.release_tag}}
           files: ${{env.WORK_PATH}}/OpenSSL_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}.tar.gz
