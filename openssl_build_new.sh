@@ -20,11 +20,6 @@ else
     PLATFORM="linux"
 fi
 
-# Thêm flag để hỗ trợ 16KB alignment cho Android
-ALIGNMENT_FLAGS="-malign=16 -fPIC -Os"
-export CXXFLAGS="$CXXFLAGS $ALIGNMENT_FLAGS"
-export CPPFLAGS="$CPPFLAGS $ALIGNMENT_FLAGS"
-
 function build(){
     mkdir ${OUTPUT_PATH}
 
@@ -32,8 +27,10 @@ function build(){
 
     export ANDROID_NDK_ROOT=${ANDROID_NDK_PATH}
     export PATH=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${PLATFORM}-x86_64/bin:$PATH
-    export CXXFLAGS="-fPIC -Os $ALIGNMENT_FLAGS"
-    export CPPFLAGS="-DANDROID -fPIC -Os $ALIGNMENT_FLAGS"
+    export CXXFLAGS="-fPIC -Os"
+    export CPPFLAGS="-DANDROID -fPIC -Os"
+    export CFLAGS="-fPIC -Os -DANDROID"
+    export LDFLAGS="-shared"
 
     # Cấu hình với tùy chọn `shared` thay vì `-static`
     if   [ "${ANDROID_TARGET_ABI}" == "armeabi-v7a" ]; then
