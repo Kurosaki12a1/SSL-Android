@@ -43,6 +43,7 @@ aarch64-linux-android29-clang --version
 ## 3. Build Instructions (minSdk = 29)
 
 > Run `make distclean` before each new build.
+
 > Note: You can change "29" to minSdk of your Android app.
 
 ### arm64-v8a
