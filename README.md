@@ -50,5 +50,3 @@ This repository uses **GitHub Actions** for continuous integration. It automates
   3. Build OpenSSL with the appropriate configuration.
   4. Generate a release tag and upload the libraries.
 
-### File Structure
-
