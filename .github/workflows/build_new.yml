@@ -28,6 +28,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
 
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y binutils aria2
+
       - name: Install Aria2
         run: |
           sudo apt -yqq update
@@ -53,6 +58,11 @@ jobs:
         run: |
           bash ./openssl_build_new.sh ${{fromJSON(matrix.info).ANDROID_TARGET_API}} ${{fromJSON(matrix.info).ANDROID_TARGET_ABI}} ${{env.OPENSSL_VERSION}} ${{fromJSON(matrix.info).ANDROID_NDK}}
           echo "::set-output name=status::success"
+
+      - name: Check .so alignment
+        run: |
+          readelf -e  ${{env.WORK_PATH}}/OpenSSL_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libcrypto.so | grep 'Alignment'
+          readelf -e  ${{env.WORK_PATH}}/OpenSSL_${{env.OPENSSL_VERSION}}_${{fromJSON(matrix.info).ANDROID_TARGET_ABI}}/lib/libssl.so | grep 'Alignment'
 
       - name: Generate release tag
         id: tag
