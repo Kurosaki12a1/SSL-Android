@@ -1,52 +1,77 @@
-# SSL-Android-16kb-alignment
+````markdown
+# Android `.so` Builder (16KB aligned) — Windows + MSYS2
 
-SSL-Android is a project to build OpenSSL libraries for Android platforms. It supports various Android architectures such as `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`, and `riscv64`. The project is designed to be customizable and can be built for different API levels and target ABIs.
+This repo already includes the build script. **Just run it** to compile your C++ into Android `.so` for `arm64-v8a`, `x86_64`, `x86`, `armeabi-v7a`, with **16KB page alignment**.
 
-### Features
-- Build OpenSSL libraries (`.so`) for Android.
-- Supports **16KB alignment** for Android shared libraries.
-- Easily customizable via GitHub Actions.
-- Built for various target ABIs including `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`, and `riscv64`.
+---
 
-### Requirements
-- **Android NDK**: Version r28c (can change in github action)
-- **Android Build Tools**: Minimum version 35.0.0-rc3 is required for `zipalign`.
-- **GitHub Actions**: For automating the build and release process.
+## Prerequisites (Windows)
 
-### How to Use
+- **MSYS2** (use the “MSYS2 UCRT64” terminal)
+- **Android NDK** (side-by-side, e.g. `28.0.13004108`)
+- Optional: **Perl** (not required for this C++ flow)
 
-1. **Fork the Repository**:
-   - Fork this repository to your own GitHub account to start using it.
+Install/update tools in MSYS2:
+```bash
+pacman -Syu
+pacman -S --needed binutils dos2unix
+````
 
-2. **Modify the `build.yml` for Minimum SDK**:
-   - After forking, navigate to the `.github/workflows/build.yml` file.
-   - Update the **minimum SDK** version in the `ANDROID_TARGET_API` section as required.
-     ```yaml
-     android_target_api: 29  # Change this value to your desired SDK version
-     ```
+---
 
-3. **Build the Project**:
-   - Once the fork is completed and the SDK version is updated, GitHub Actions will automatically start the build process for your project.
-   - The project will generate OpenSSL `.so` libraries for Android with support for the target API level and architecture you configured.
+## Quick Start
 
-4. **16KB Alignment**:
-   - The build process has been configured to support **16KB alignment** by passing the `-Wl,-z,max-page-size=16384` linker flag during the compilation process.
+From the repo root (where the script is):
 
-5. **Check Build Results**:
-   - After the build completes, you can check the output for your built libraries in the `openssl_${OPENSSL_VERSION}_${ANDROID_TARGET_ABI}` directory.
-   - You can also find the generated `.tar.gz` files containing the libraries for each architecture.
+```bash
+chmod +x build_android_so.sh
+dos2unix build_android_so.sh   # only if CRLF issues
+bash ./build_android_so.sh
+```
 
-6. **Upload Release**:
-   - If you want to generate a release, the `build_new.yml` script will automatically package the `.so` files and upload them to your GitHub releases when the build completes successfully.
+**Output:**
+`jniLibs/<abi>/libmylib.so`
 
-### GitHub Actions
+> 16KB alignment is enforced at link time via `-Wl,-z,max-page-size=16384` (critical for `arm64-v8a`/`x86_64`).
 
-This repository uses **GitHub Actions** for continuous integration. It automates the process of downloading the Android NDK, building OpenSSL for Android, and uploading the generated libraries as a release.
+---
 
-- **Workflow Trigger**: The workflow is triggered on pushes to the `main` branch or manually via the GitHub interface using `workflow_dispatch`.
-- **Steps**: 
-  1. Checkout the repository.
-  2. Download the Android NDK.
-  3. Build OpenSSL with the appropriate configuration.
-  4. Generate a release tag and upload the libraries.
+## Customize (optional)
 
+Override via environment variables:
+
+```bash
+NDK="/c/Android/ndk/28.0.13004108" \
+API=29 \
+SRC_DIR=./cpp \
+OUT_ROOT=app/src/main/jniLibs \
+LIB_NAME=mylib \
+bash ./build_android_so.sh
+```
+
+* `NDK` — path to your NDK (MSYS style `/c/...`)
+* `API` — minSdk (e.g. `29`)
+* `SRC_DIR` — folder with your `*.cpp` (default `./cpp`)
+* `OUT_ROOT` — output root (default `jniLibs`)
+* `LIB_NAME` — output name (default `mylib` → `libmylib.so`)
+
+---
+
+## Verify 16KB Alignment
+
+```bash
+/c/Android/ndk/28.0.13004108/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-readelf.exe \
+  -l jniLibs/arm64-v8a/libmylib.so | grep Align
+# Expect: Align 0x4000 (== 16384 bytes == 16KB)
+```
+
+---
+
+## Notes
+
+* For Android apps, set `OUT_ROOT=app/src/main/jniLibs` so Gradle picks the libs automatically.
+* Remove any old prebuilt `.so` with the same name under `jniLibs` to avoid packaging the wrong file.
+
+```
+::contentReference[oaicite:0]{index=0}
+```
