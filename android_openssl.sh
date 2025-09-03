@@ -76,7 +76,7 @@ function build(){
     export RANLIB="llvm-ranlib"
     export NM="llvm-nm"
 
-    CONFIG_OPTS="shared --prefix=${OUTPUT_PATH}"
+    CONFIG_OPTS="shared no-apps no-asm no-docs no-engine no-gost no-legacy no-ssl no-tests no-zlib --prefix=${OUTPUT_PATH}"
     if [ "${ENABLE_DEPRECATED}" = "1" ]; then
         CONFIG_OPTS="enable-deprecated ${CONFIG_OPTS}"
     fi
@@ -90,7 +90,7 @@ function build(){
 
         # 1.0.x dùng perl Configure + make depend (bắt buộc)
         # Nếu gặp lỗi asm với clang, thêm 'no-asm' vào cuối dòng Configure.
-        perl ./Configure ${TARGET} -D__ANDROID_API__=${ANDROID_TARGET_API} shared no-engine no-hw no-dso ${CONFIG_OPTS}
+        perl ./Configure ${TARGET} -D__ANDROID_API__=${ANDROID_TARGET_API} ${CONFIG_OPTS}
         make clean || true
         make depend
         make -j"$(nproc)"
