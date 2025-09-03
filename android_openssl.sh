@@ -90,7 +90,7 @@ function build(){
 
         # 1.0.x dùng perl Configure + make depend (bắt buộc)
         # Nếu gặp lỗi asm với clang, thêm 'no-asm' vào cuối dòng Configure.
-        perl ./Configure ${TARGET} -D__ANDROID_API__=${ANDROID_TARGET_API} ${CONFIG_OPTS}
+        perl ./Configure ${TARGET} -D__ANDROID_API__=${ANDROID_TARGET_API} shared no-engine no-hw no-dso ${CONFIG_OPTS}
         make clean || true
         make depend
         make -j"$(nproc)"
