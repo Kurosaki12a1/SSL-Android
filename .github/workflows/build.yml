@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 
 env:
-  OPENSSL_VERSION: 3.5.2
+  OPENSSL_VERSION: 1.0.2o
   WORK_PATH: /home/runner/work/SSL-Android-16kb-alignment/SSL-Android-16kb-alignment
 
 jobs:
