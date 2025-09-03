@@ -7,7 +7,7 @@ on:
 
 env:
   OPENSSL_VERSION: 3.5.2
-  WORK_PATH: /home/runner/work/SSL-Android/SSL-Android
+  WORK_PATH: /home/runner/work/SSL-Android-16kb-alignment/SSL-Android-16kb-alignment
 
 jobs:
   Compile_OpenSSL_for_Android:
