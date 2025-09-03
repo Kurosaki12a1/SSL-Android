@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 
 env:
-  OPENSSL_VERSION: 1.0.2o
+  OPENSSL_VERSION: 3.5.2
   WORK_PATH: /home/runner/work/SSL-Android-16kb-alignment/SSL-Android-16kb-alignment
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
       - name: Download OpenSSL
         id: download_openssl
         run: |
-          aria2c -o openssl-${{env.OPENSSL_VERSION}}.tar.gz https://github.com/openssl/openssl/releases/download/OpenSSL_1_0_2o/openssl-1.0.2o.tar.gz
+          aria2c -o openssl-${{env.OPENSSL_VERSION}}.tar.gz https://github.com/openssl/openssl/releases/download/openssl-${{env.OPENSSL_VERSION}}/openssl-${{env.OPENSSL_VERSION}}.tar.gz
           tar -zxvf openssl-${{env.OPENSSL_VERSION}}.tar.gz
           echo "::set-output name=status::success"
 
